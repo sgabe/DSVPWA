@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<attacks>
+    <attack id="0">
+        <class>AuthBypass</class>
+        <title>Login</title>
+        <route>/login</route>
+        <template>login.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/SQL_Injection</reference>
+    </attack>
+    <attack id="1">
+        <class>SessionFixation</class>
+        <title>Home</title>
+        <route>/home</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Session_fixation</reference>
+    </attack>
+    <attack id="2">
+        <class>SessionHijacking</class>
+        <title>Profile</title>
+        <route>/profile</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Session_hijacking_attack</reference>
+    </attack>
+    <attack id="3">
+        <class>SQLinjection</class>
+        <title>Users</title>
+        <route>/users</route>
+        <template>users.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/SQL_Injection</reference>
+    </attack>
+    <attack id="4">
+        <class>XSSReflected</class>
+        <title>Message</title>
+        <route>/post</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/xss</reference>
+    </attack>
+    <attack id="5">
+        <class>XSSStored</class>
+        <title>Guestbook</title>
+        <route>/guestbook</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/xss</reference>
+    </attack>
+    <attack id="6">
+        <class>UnvalidatedRedirect</class>
+        <title>Jump</title>
+        <route>/jump</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html</reference>
+    </attack>
+    <attack id="7">
+        <class>UnsafeDeserialization</class>
+        <title>Extract</title>
+        <route>/extract</route>
+        <template>main.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data</reference>
+    </attack>
+    <attack id="8">
+        <class>CommandInjection</class>
+        <title>Diagnostics</title>
+        <route>/diag</route>
+        <template>diagnostics.html</template>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Command_Injection</reference>
+    </attack>
+    <attack id="9">
+        <class>PathTraversal</class>
+        <template>documents.html</template>
+        <title>Documents</title>
+        <route>/docs</route>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Path_Traversal</reference>
+    </attack>
+    <attack id="10">
+        <class>ExecutionAfterRedirect</class>
+        <template>main.html</template>
+        <title>Admin</title>
+        <route>/admin</route>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Execution_After_Redirect_(EAR)</reference>
+    </attack>
+</attacks>

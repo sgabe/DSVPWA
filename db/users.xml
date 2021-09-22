@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<users>
+    <user id="0">
+        <username>admin</username>
+        <name>Admininistrator</name>
+        <surname>Administrator</surname>
+        <password>Y3RFgwZP$v6v#D</password>
+    </user>
+    <user id="2">
+        <username>guest</username>
+        <name>Guest</name>
+        <surname>Guest</surname>
+        <password>guest</password>
+    </user>
+    <user id="3">
+        <username>loella</username>
+        <name>Ella</name>
+        <surname>Lo</surname>
+        <password>babygirl</password>
+    </user>
+    <user id="4">
+        <username>weitzel</username>
+        <name>Timothy</name>
+        <surname>Weitzel</surname>
+        <password>123456</password>
+    </user>
+</users>
