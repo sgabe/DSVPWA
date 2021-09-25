@@ -8,6 +8,7 @@ In comparison to other similar projects, this application also provides very bas
 + [Command injection](https://owasp.org/www-community/attacks/Command_Injection)
 + [Deserialization of untrusted data](https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data)
 + [Execution after redirect (EAR)](https://owasp.org/www-community/attacks/Execution_After_Redirect_(EAR))
++ [Insecure transport](https://owasp.org/www-community/vulnerabilities/Insecure_Transport)
 + [Open redirect](https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html)
 + [Path traversal](https://owasp.org/www-community/attacks/Path_Traversal)
 + [Cross-site scripting (XSS)](https://owasp.org/www-community/attacks/xss)

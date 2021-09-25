@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import ssl
 import argparse
 
 from dsvpwa.server import VulnHTTPServer
@@ -17,13 +18,25 @@ def main():
         help='set the IP address to bind to (defaults to 127.0.0.1)')
     parser.add_argument('--port', type=int, default=65413,
         help='set the port number to bind to (defaults to 65413)')
+    parser.add_argument('--ssl', action='store_true',
+        help='enable encryption (defaults to false)')
     parser.add_argument('--version', action='version',
         version='%(prog)s v{} ({})'.format(BUILD_VER, BUILD_REV))
 
     args = parser.parse_args()
+    proto = 'http' if not args.ssl else 'https'
 
     try:
         httpd = VulnHTTPServer((args.host, args.port), VulnHTTPRequestHandler)
+
+        if args.ssl:
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+            ctx.options &= ~ssl.OP_NO_SSLv3
+            ctx.options &= ~ssl.OP_NO_COMPRESSION
+            ctx.options &= ~ssl.OP_CIPHER_SERVER_PREFERENCE
+            ctx.load_cert_chain(certfile='./ssl/cert.pem', keyfile='./ssl/key.pem')
+            httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
+
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
