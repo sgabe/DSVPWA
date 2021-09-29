@@ -102,6 +102,7 @@ class StaticHandler(VulnRequestHandler):
     }
 
     def find(self, path):
+        path = 'static/svg/bug-fill.svg' if path == '/favicon.ico' else path
         ext = os.path.splitext(path)[1]
         try:
             if ext in ('.jpg', '.jpeg', '.png', '.woff', '.woff2', '.ttf', '.ico'):
