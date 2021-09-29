@@ -37,8 +37,10 @@ def main():
             ctx.load_cert_chain(certfile='./ssl/cert.pem', keyfile='./ssl/key.pem')
             httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
 
+        print('[*] Navigate to {}://{}:{} to access DSVPWA'.format(proto, args.host, args.port))
         httpd.serve_forever()
     except KeyboardInterrupt:
+        print('[*] Quitting...')
         pass
     except Exception as ex:
         print("[!] Exception occurred ('%s')" % ex)

@@ -1,4 +1,5 @@
 import os
+import sys
 import dsvpwa
 import string
 import random
@@ -140,6 +141,27 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         self.directory = os.fspath(os.getcwd())
         super().__init__(*args, **kwargs)
+
+    def log_request(self, code='-', size='-'):
+        if isinstance(code, HTTPStatus):
+            code = code.value
+        sys.stdout.write('[i] %s - %s - "%s" %s %s\n' % (
+            self.address_string(),
+            self.log_date_time_string(),
+            self.requestline,
+            str(code),
+            str(size)
+        ))
+
+    def log_error(self, format, *args):
+        sys.stderr.write('[-] %s - %s - %s\n' % (
+            self.address_string(),
+            self.log_date_time_string(),
+            format%args
+        ))
+
+    def log_message(self, format, *args):
+        sys.stdout.write('[*] %s\n' % (self.address_string(), format%args))
 
     def do_HEAD(self):
         return
