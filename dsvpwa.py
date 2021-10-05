@@ -16,11 +16,11 @@ def main():
         description='Damn Simple Vulnerable Python Web Application')
     parser.add_argument('--host', default='127.0.0.1',
         help='set the IP address to bind to (defaults to 127.0.0.1)')
-    parser.add_argument('--port', type=int, default=65413,
+    parser.add_argument('--port', type=int, default=os.getenv('DSVPWA_PORT', 65413),
         help='set the port number to bind to (defaults to 65413)')
-    parser.add_argument('--risk', type=int, default=1, choices=range(1,4),
+    parser.add_argument('--risk', type=int, default=os.getenv('DSVPWA_RISK', 1), choices=range(1,4),
         help='set the risk level in the range 1-3')
-    parser.add_argument('--ssl', action='store_true',
+    parser.add_argument('--ssl', action='store_true', default=os.getenv('DSVPWA_SSL', 0),
         help='enable encryption (defaults to false)')
     parser.add_argument('--version', action='version',
         version='%(prog)s v{} ({})'.format(BUILD_VER, BUILD_REV))
