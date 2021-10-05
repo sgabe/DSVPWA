@@ -261,8 +261,12 @@ class AuthBypass(Attack):
             username = re.sub(r"[^\w]", '', params.get('username')[0])
             password = params.get('password')[0]
 
-            cursor.execute("SELECT * FROM users WHERE username='" +  username + "' AND password='" + password + "'")
-            user = cursor.fetchone()
+            if username == 'dsvpwa' and password == 'dsvpwa':
+                user = ['dsvpwa', 'Default', 'Default', 'dsvpwa']
+            else:
+                cursor.execute("SELECT * FROM users WHERE username='" +  username + "' AND password='" + password + "'")
+                user = cursor.fetchone()
+
             if user:
                 type = 'success'
                 message = 'Welcome <strong>{} {}</strong>!'.format(user[2], user[3])
