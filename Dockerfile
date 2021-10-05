@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9.7-slim-bullseye
 
 RUN apt-get update && apt-get install -y \
   dnsutils \
