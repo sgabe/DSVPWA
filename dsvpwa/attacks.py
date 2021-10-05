@@ -10,6 +10,12 @@ import urllib.parse as urlparse
 
 
 class Attack():
+    warning = (
+        'This attack vector is unavailable on the current risk level ({}). '
+        'Try to increase the value for --risk to enable more dangerous attack '
+        'vectors like this.'
+    )
+
     def __init__(self, title, description, route, good_path, evil_path, reference):
         self.title = title
         self.description = description
@@ -145,17 +151,20 @@ class CommandInjection(Attack):
     def run(self, handler):
         params = handler.params
 
-        content = 'Try <a href="{}">this</a> or <a href="{}">this</a>...'.format(self.good_path, self.evil_path)
-        if 'domain' in params:
-            command = 'host' if os.name != 'nt' else 'nslookup'
-            domain = params.get('domain', '/')[0]
-            output = subprocess.check_output(
-                ' '.join([command, domain]),
-                shell=True,
-                stderr=subprocess.STDOUT,
-                stdin=subprocess.PIPE
-            )
-            content = '<pre>{}</pre>'.format(output.decode())
+        if handler.risk < 3:
+            content = self.warning.format(handler.risk)
+        else:
+            content = 'Try <a href="{}">this</a> or <a href="{}">this</a>...'.format(self.good_path, self.evil_path)
+            if 'domain' in params:
+                command = 'host' if os.name != 'nt' else 'nslookup'
+                domain = params.get('domain', '/')[0]
+                output = subprocess.check_output(
+                    ' '.join([command, domain]),
+                    shell=True,
+                    stderr=subprocess.STDOUT,
+                    stdin=subprocess.PIPE
+                )
+                content = '<pre>{}</pre>'.format(output.decode())
 
         return content
 
@@ -179,7 +188,9 @@ class UnsafeDeserialization(Attack):
 
         content = 'Try <a href="{}">this</a> or <a href="{}">this</a>...'.format(self.good_path, self.evil_path)
 
-        if 'object' in params:
+        if handler.risk < 3:
+            content = self.warning.format(handler.risk)
+        elif 'object' in params:
             object = params.get('object', '')[0]
             content = str(pickle.loads(base64.urlsafe_b64decode(object)))
 

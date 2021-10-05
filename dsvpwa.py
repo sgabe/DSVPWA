@@ -18,6 +18,8 @@ def main():
         help='set the IP address to bind to (defaults to 127.0.0.1)')
     parser.add_argument('--port', type=int, default=65413,
         help='set the port number to bind to (defaults to 65413)')
+    parser.add_argument('--risk', type=int, default=1, choices=range(1,4),
+        help='set the risk level in the range 1-3')
     parser.add_argument('--ssl', action='store_true',
         help='enable encryption (defaults to false)')
     parser.add_argument('--version', action='version',
@@ -28,6 +30,7 @@ def main():
 
     try:
         httpd = VulnHTTPServer((args.host, args.port), VulnHTTPRequestHandler)
+        httpd.RequestHandlerClass.risk = args.risk
 
         if args.ssl:
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
