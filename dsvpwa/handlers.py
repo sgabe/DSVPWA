@@ -62,9 +62,15 @@ class TemplateHandler(VulnRequestHandler):
 
         return navigation
 
+    def get_version(self):
+        ver = os.getenv('BUILD_VER', dsvpwa.__version__)
+        rev = os.getenv('BUILD_REV', 'N/A')
+        return 'v{} ({})'.format(ver, rev)
+
     def get_content(self):
         title = 'Front page'
         content = ''
+        version = self.get_version()
         navigation = self.get_navigation()
 
         for attack in self.attacks:
@@ -77,7 +83,7 @@ class TemplateHandler(VulnRequestHandler):
             project = dsvpwa.__project__,
             url = dsvpwa.__url__,
             author = dsvpwa.__author__,
-            version = dsvpwa.__version__,
+            version = version,
             title = title,
             navigation = navigation,
             content = content
