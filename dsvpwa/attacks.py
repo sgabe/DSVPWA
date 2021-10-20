@@ -34,7 +34,7 @@ class SQLinjection(Attack):
         cursor = handler.server.connection.cursor()
 
         id = '9999999' if 'id' not in params else params['id'][0]
-        cursor.execute("SELECT id, username, name, surname, session FROM users WHERE id=" + id)
+        cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=" + id)
 
         rows = ""
         for row in cursor.fetchall():
@@ -48,8 +48,9 @@ class SQLinjection(Attack):
                 <thead>
                     <th scope="col">ID</th>
                     <th scope="col">Username</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Surname</th>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">E-mail address</th>
                     <th scope="col">Session</th>
                 </thead>
                 {}
@@ -240,14 +241,20 @@ class SessionFixation(Attack):
 class SessionHijacking(Attack):
     def run(self, handler):
         cursor = handler.server.connection.cursor()
-        session = handler.cookie['SESSIONID'].value
+        content = 'Please login, <strong>Anonymous</strong>!'
 
-        cursor.execute("SELECT * FROM users WHERE session = ?", [session])
-        user = cursor.fetchone()
-        if user:
-            content = 'Welcome <strong>{} {}</strong>!'.format(user[2], user[3])
-        else:
-            content = 'Please login, <strong>Anonymous</strong>!'
+        if 'SESSIONID' in handler.cookie:
+            session = handler.cookie['SESSIONID'].value
+            cursor.execute("SELECT * FROM users WHERE session = ?", [session])
+
+            user = cursor.fetchone()
+            if user:
+                content = '''
+                <h2>Welcome <strong>{}</strong>!</h2>
+                Your first name: <pre>{}</pre>
+                Your last name: <pre>{}</pre>
+                Your email address: <pre>{}</pre>
+                '''.format(user[1], user[2], user[3], user[4])
 
         return content
 

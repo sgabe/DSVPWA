@@ -9,8 +9,9 @@ class VulnHTTPServer(ThreadingHTTPServer):
     for user in ET.parse('./db/users.xml').findall("user"):
         users.append((
             user.findtext('username'),
-            user.findtext('name'),
-            user.findtext('surname'),
+            user.findtext('firstname'),
+            user.findtext('lastname'),
+            user.findtext('email'),
             user.findtext('password'),
             '' # SESSION
         ))
@@ -26,8 +27,9 @@ class VulnHTTPServer(ThreadingHTTPServer):
         CREATE TABLE users(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
-            name TEXT,
-            surname TEXT,
+            firstname TEXT,
+            lastname TEXT,
+            email TEXT,
             password TEXT,
             session TEXT
         )''')
@@ -40,5 +42,5 @@ class VulnHTTPServer(ThreadingHTTPServer):
         )''')
 
     connection.executemany('''
-        INSERT INTO users(id, username, name, surname, password, session) VALUES(NULL, ?, ?, ?, ?, ?)''',
+        INSERT INTO users(id, username, firstname, lastname, email, password, session) VALUES(NULL, ?, ?, ?, ?, ?, ?)''',
         users)
