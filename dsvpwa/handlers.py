@@ -234,6 +234,7 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
 
         self.send_header('Connection', 'close')
         self.send_header('X-XSS-Protection', '0')
+        self.send_header('Content-Security-Policy', 'default-src *')
         self.end_headers()
         self.wfile.write(body)
         self.wfile.flush()
