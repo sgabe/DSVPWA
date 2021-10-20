@@ -23,18 +23,21 @@
     </nav>
     <main role="main" class="container">
         <h1>{title}</h1>
+        <p>Enter the user ID here:</p>
         <form id="users" method="GET" action="/users">
-            <div class="form-row">
-                <div class="col-11">
-                    <label for="id" class="sr-only">ID</label>
-                    <input type="text" id="id" name="id" class="form-control" placeholder="ID" required autofocus>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary" type="submit">Submit</button>
+            <div class="form-group">
+                <div class="form-row">
+                    <div class="col-11">
+                        <label for="id" class="sr-only">ID</label>
+                        <input type="text" id="id" name="id" class="form-control" placeholder="ID" required autofocus>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
                 </div>
             </div>
         </form>
-
+        <p>Read the results here:</p>
         {content}
     </main>
     <footer class="footer">

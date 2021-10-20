@@ -44,7 +44,6 @@ class SQLinjection(Attack):
             rows += "".join("<tr>{}</tr>".format(columns))
 
         content = """
-            <h2>Result(s):</h2>
             <table class="table">
                 <thead>
                     <th scope="col">ID</th>

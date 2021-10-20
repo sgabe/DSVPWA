@@ -23,17 +23,13 @@
     </nav>
     <main role="main" class="container">
         <h1>{title}</h1>
-        <p>Select a document here:</p>
-        <form method="GET" action="/docs">
+        <p>Leave a new comment here:</p>
+        <form id="guestbook" method="GET" action="/guestbook">
             <div class="form-group">
                 <div class="form-row">
                     <div class="col-11">
-                        <label for="path" class="sr-only">Path</label>
-                        <select class="form-control" id="path" name="path">
-                            <option value="docs/cursus.txt">One</option>
-                            <option value="docs/ornare.txt">Two</option>
-                            <option value="docs/sodales.txt">Three</option>
-                        </select>
+                        <label for="comment" class="sr-only">Comment</label>
+                        <input type="text" id="comment" name="comment" class="form-control" placeholder="Comment" required autofocus>
                     </div>
                     <div class="col">
                         <button class="btn btn-primary" type="submit">Submit</button>
@@ -41,7 +37,7 @@
                 </div>
             </div>
         </form>
-        <p>Read the chosen document here:</p>
+        <p>Read previous comments here:</p>
         {content}
     </main>
     <footer class="footer">

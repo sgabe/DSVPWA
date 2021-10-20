@@ -44,7 +44,7 @@
         <class>XSSReflected</class>
         <title>Message</title>
         <route>/post</route>
-        <template>main.html</template>
+        <template>post.html</template>
         <good_path>...</good_path>
         <evil_path>...</evil_path>
         <description>...</description>
@@ -54,7 +54,7 @@
         <class>XSSStored</class>
         <title>Guestbook</title>
         <route>/guestbook</route>
-        <template>main.html</template>
+        <template>guestbook.html</template>
         <good_path>...</good_path>
         <evil_path>...</evil_path>
         <description>...</description>

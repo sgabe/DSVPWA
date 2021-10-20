@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 ### Added
+- New HTML templates and forms.
 - Build arguments for Docker builds.
 - Default credentials.
 - Backdoor as custom HTTP method.
