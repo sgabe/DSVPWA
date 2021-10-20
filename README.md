@@ -5,6 +5,7 @@
 ## Features
 
 In comparison to other similar projects, this application also provides very basic *session management* and *HTML templating*. Currently it can be used to demonstrate the following security attacks and vulnerabilities:
++ [Cross-site request forgery (CSRF)](https://owasp.org/www-community/attacks/csrf)
 + [Command injection](https://owasp.org/www-community/attacks/Command_Injection)
 + [Deserialization of untrusted data](https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data)
 + [Execution after redirect (EAR)](https://owasp.org/www-community/attacks/Execution_After_Redirect_(EAR))
