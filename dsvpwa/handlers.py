@@ -230,6 +230,7 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
             body = content
 
         for morsel in self.cookie.values():
+            morsel['path'] = '/'
             self.send_header('Set-Cookie', morsel.OutputString())
 
         self.send_header('Connection', 'close')
