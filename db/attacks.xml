@@ -120,4 +120,14 @@
         <description>...</description>
         <reference>https://owasp.org/www-community/attacks/csrf</reference>
     </attack>
+    <attack id="12">
+        <class>Clickjacking</class>
+        <template>main.html</template>
+        <title>Danger</title>
+        <route>/danger</route>
+        <good_path>...</good_path>
+        <evil_path>...</evil_path>
+        <description>...</description>
+        <reference>https://owasp.org/www-community/attacks/Clickjacking</reference>
+    </attack>
 </attacks>

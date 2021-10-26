@@ -340,3 +340,47 @@ class XSRequestForgery(Attack):
                     '''.format(user[2], user[3], user[4])
 
         return content
+
+
+class Clickjacking(Attack):
+    def run(self, handler):
+        params = handler.params
+        connection = handler.server.connection
+        cursor = connection.cursor()
+        content = 'Please login, <strong>Anonymous</strong>!'
+
+        if 'SESSIONID' in handler.cookie:
+            session = handler.cookie['SESSIONID'].value
+            cursor.execute("SELECT * FROM users WHERE session = ?", [session])
+
+            user = cursor.fetchone()
+            if user:
+
+                if 'delete' in params.keys():
+                    cursor.execute("DELETE FROM users WHERE id = ?", [user[0]])
+                    connection.commit()
+                    content = '''
+                    <div class="alert alert-success">
+                        Your account has been deleted!
+                    </div>
+                    '''
+                else:
+                    content = '''
+                    <div class="alert alert-danger">
+                        Irreversible and destructive actions!
+                    </div>
+                    <form method="GET" action="/danger">
+                        <div class="form-group">
+                            <label>
+                                Delete this account
+                            </label>
+                            <small style="margin-top:-10px" class="form-text text-muted">
+                                Once you delete your account, there is no going back. Please be certain.
+                            </small>
+                            <input type="hidden" name="delete" value="1">
+                            <button class="btn btn-danger" type="submit" style="float:right;margin-top:-40px">Delete</button>
+                        </div>
+                    </form>
+                    '''
+
+        return content
