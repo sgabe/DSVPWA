@@ -16,6 +16,7 @@ In comparison to other similar projects, this application also provides very bas
 + [Session fixation](https://owasp.org/www-community/attacks/Session_fixation)
 + [Session hijacking](https://owasp.org/www-community/attacks/Session_hijacking_attack)
 + [SQL injection](https://owasp.org/www-community/attacks/SQL_Injection)
++ [Clickjacking](https://owasp.org/www-community/attacks/Clickjacking)
 
 ## Requirements
 
@@ -40,6 +41,7 @@ Note that ports which are not bound to the host (i.e., `-p 65413:65413` instead 
 
 ## Similar projects
 
++ [Damn Small Vulnerable Web (DSVW)](https://github.com/stamparm/DSVW)
 + [Damn Vulnerable Web Application (DVWA)](https://github.com/digininja/DVWA)
 + [DVPWA -- Damn Vulnerable Python Web Application](https://github.com/anxolerd/dvpwa)
 + [Extreme Vulnerable Node Application (XVNA)](https://github.com/vegabird/xvna)
