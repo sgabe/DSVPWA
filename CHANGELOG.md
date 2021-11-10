@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Favicon path.
 
 ### Changed
+- Error handling for SQLi.
 - Default CSP.
 - Version reporting.
 - Docker base image.

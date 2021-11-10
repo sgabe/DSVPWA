@@ -4,6 +4,7 @@ import time
 import html
 import base64
 import pickle
+import sqlite3
 import subprocess
 import urllib.request
 import urllib.parse as urlparse
@@ -34,7 +35,10 @@ class SQLinjection(Attack):
         cursor = handler.server.connection.cursor()
 
         id = '9999999' if 'id' not in params else params['id'][0]
-        cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=" + id)
+        try:
+            cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=" + id)
+        except sqlite3.OperationalError as e:
+            return e
 
         rows = ""
         for row in cursor.fetchall():
@@ -281,7 +285,10 @@ class AuthBypass(Attack):
             if username == 'dsvpwa' and password == 'dsvpwa':
                 user = ['dsvpwa', 'Default', 'Default', 'dsvpwa']
             else:
-                cursor.execute("SELECT * FROM users WHERE username='" +  username + "' AND password='" + password + "'")
+                try:
+                    cursor.execute("SELECT * FROM users WHERE username='" +  username + "' AND password='" + password + "'")
+                except sqlite3.OperationalError as e:
+                    return content.format(type=type, message=e)
                 user = cursor.fetchone()
 
             if user:
