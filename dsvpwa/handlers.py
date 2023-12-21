@@ -2,7 +2,6 @@ import os
 import sys
 import dsvpwa
 import string
-import random
 import mimetypes
 import posixpath
 import subprocess
@@ -13,6 +12,7 @@ import xml.etree.ElementTree as ET
 
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler
+import secrets
 
 
 class VulnRequestHandler():
@@ -199,7 +199,7 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
         self.cookie.load(self.headers.get('Cookie', ''))
 
         if not self.cookie and '/login' == self.path:
-            token = ''.join(random.sample(string.ascii_letters + string.digits, 20))
+            token = ''.join(secrets.SystemRandom().sample(string.ascii_letters + string.digits, 20))
             self.cookie.load('SESSIONID={}'.format(token))
 
         ext = os.path.splitext(self.path)[1]
