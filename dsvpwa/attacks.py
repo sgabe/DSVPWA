@@ -286,7 +286,7 @@ class AuthBypass(Attack):
                 user = ['dsvpwa', 'Default', 'Default', 'dsvpwa']
             else:
                 try:
-                    cursor.execute("SELECT * FROM users WHERE username='" +  username + "' AND password='" + password + "'")
+                    cursor.execute("SELECT * FROM users WHERE username=?" + " AND password=?", (username, password, ))
                 except sqlite3.OperationalError as e:
                     return content.format(type=type, message=e)
                 user = cursor.fetchone()
