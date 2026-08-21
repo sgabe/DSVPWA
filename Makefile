@@ -8,3 +8,7 @@ all:
 		--build-arg BUILD_REV=$(BUILD_REV) \
 		--build-arg BUILD_DATE=$(BUILD_DATE) \
 		--no-cache -t sgabe/dsvpwa:$(BUILD_VER) .
+
+.PHONY: test
+test:
+	python -m unittest discover -s tests -v

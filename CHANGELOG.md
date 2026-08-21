@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Deterministic lab reset.
 - Opt-in secure comparison mode.
 - Visibility into browser and session defenses.
+- Executable tests for lessons.
 
 ### Fixed
 - Unintended attack surfaces.
