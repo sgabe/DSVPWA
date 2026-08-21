@@ -262,11 +262,23 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
 
         for morsel in self.cookie.values():
             morsel['path'] = '/'
+            if getattr(self, 'security_mode', 'vulnerable') == 'secure':
+                morsel['httponly'] = True
+                morsel['samesite'] = 'Strict'
+                if getattr(self, 'secure_transport', False):
+                    morsel['secure'] = True
             self.send_header('Set-Cookie', morsel.OutputString())
 
         self.send_header('Connection', 'close')
-        self.send_header('X-XSS-Protection', '0')
-        self.send_header('Content-Security-Policy', "default-src * 'unsafe-inline'")
+        if getattr(self, 'security_mode', 'vulnerable') == 'secure':
+            self.send_header('X-Frame-Options', 'DENY')
+            self.send_header(
+                'Content-Security-Policy',
+                "default-src 'self'; object-src 'none'; frame-ancestors 'none'"
+            )
+        else:
+            self.send_header('X-XSS-Protection', '0')
+            self.send_header('Content-Security-Policy', "default-src * 'unsafe-inline'")
         self.end_headers()
         self.wfile.write(body)
         self.wfile.flush()

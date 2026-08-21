@@ -36,6 +36,7 @@ def main():
         httpd = VulnHTTPServer((args.host, args.port), VulnHTTPRequestHandler)
         httpd.RequestHandlerClass.risk = args.risk
         httpd.RequestHandlerClass.security_mode = security_mode
+        httpd.RequestHandlerClass.secure_transport = args.ssl
 
         if args.ssl:
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
