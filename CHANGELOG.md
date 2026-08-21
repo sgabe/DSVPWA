@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Lesson metadata and cards.
 - Lesson card footer toggle.
 - Deterministic lab reset.
+- Opt-in secure comparison mode.
 
 ### Fixed
 - Unintended attack surfaces.

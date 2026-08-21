@@ -22,15 +22,20 @@ def main():
         help='set the risk level in the range 1-3')
     parser.add_argument('--ssl', action='store_true', default=os.getenv('DSVPWA_SSL', 0),
         help='enable encryption (defaults to false)')
+    parser.add_argument('--secure', action='store_true',
+        default=str(os.getenv('DSVPWA_SECURE', '')).lower() in ('1', 'true', 'yes', 'on'),
+        help='enable secure comparison mode (vulnerable mode is the default)')
     parser.add_argument('--version', action='version',
         version='%(prog)s v{} ({})'.format(BUILD_VER, BUILD_REV))
 
     args = parser.parse_args()
     proto = 'http' if not args.ssl else 'https'
+    security_mode = 'secure' if args.secure else 'vulnerable'
 
     try:
         httpd = VulnHTTPServer((args.host, args.port), VulnHTTPRequestHandler)
         httpd.RequestHandlerClass.risk = args.risk
+        httpd.RequestHandlerClass.security_mode = security_mode
 
         if args.ssl:
             ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -40,7 +45,8 @@ def main():
             ctx.load_cert_chain(certfile='./ssl/cert.pem', keyfile='./ssl/key.pem')
             httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True)
 
-        print('[*] Navigate to {}://{}:{} to access DSVPWA'.format(proto, args.host, args.port))
+        print('[*] Navigate to {}://{}:{} to access DSVPWA ({} mode)'.format(
+            proto, args.host, args.port, security_mode))
         httpd.serve_forever()
     except KeyboardInterrupt:
         print('[*] Quitting...')

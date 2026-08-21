@@ -40,11 +40,13 @@ class Attack():
             return '<a href="{}">{}</a>'.format(escaped, label)
         return '<code>{}</code>'.format(escaped)
 
-    def lesson(self):
-        """Render student-facing context without changing the vulnerable behavior."""
+    def lesson(self, handler):
+        """Render student-facing context without changing the selected behavior."""
+        mode = getattr(handler, 'security_mode', 'vulnerable')
         return '''
         <aside class="card mb-4 lesson-card d-none" aria-hidden="true">
             <div class="card-body">
+                <p><span class="badge badge-{mode_class}">{mode}</span></p>
                 <h2 class="h5">Learning objective</h2>
                 <p>{objective}</p>
                 <p class="mb-1"><strong>OWASP:</strong> {owasp}</p>
@@ -66,6 +68,8 @@ class Attack():
             </div>
         </aside>
         '''.format(
+            mode=html.escape(mode.title()),
+            mode_class='danger' if mode == 'vulnerable' else 'success',
             objective=html.escape(self.objective),
             owasp=html.escape(self.owasp),
             cwe=html.escape(self.cwe),
@@ -77,6 +81,14 @@ class Attack():
             evil=self._example('open example', self.evil_path),
             reference=html.escape(self.reference, quote=True),
         )
+
+    def execute(self, handler):
+        if getattr(handler, 'security_mode', 'vulnerable') == 'secure':
+            return self.run_secure(handler)
+        return self.run(handler)
+
+    def run_secure(self, handler):
+        return '<div class="alert alert-info">A secure comparison has not been implemented for this lesson yet.</div>'
 
     def run(self):
         pass
@@ -117,6 +129,39 @@ class SQLinjection(Attack):
         return content
 
 
+    def run_secure(self, handler):
+        params = handler.params
+        cursor = handler.server.connection.cursor()
+        raw_id = params.get('id', ['9999999'])[0]
+        try:
+            user_id = int(raw_id)
+        except ValueError:
+            return '<div class="alert alert-warning">ID must be an integer.</div>'
+
+        cursor.execute(
+            "SELECT id, username, firstname, lastname, email, session FROM users WHERE id = ?",
+            [user_id]
+        )
+        rows = ""
+        for row in cursor.fetchall():
+            columns = "".join(
+                "<td>{}</td>".format(html.escape("-" if column is None else str(column)))
+                for column in row
+            )
+            rows += "<tr>{}</tr>".format(columns)
+
+        return """
+            <table class="table">
+                <thead>
+                    <th scope="col">ID</th><th scope="col">Username</th>
+                    <th scope="col">First name</th><th scope="col">Last name</th>
+                    <th scope="col">E-mail address</th><th scope="col">Session</th>
+                </thead>
+                {}
+            </table>
+        """.format(rows)
+
+
 class XSSReflected(Attack):
     def run(self, handler):
         params = handler.params
@@ -128,6 +173,11 @@ class XSSReflected(Attack):
             content = 'No messages...'
 
         return content
+
+
+    def run_secure(self, handler):
+        content = handler.params.get('msg', ['No messages...'])[0]
+        return html.escape(content)
 
 
 class XSSStored(Attack):
@@ -162,6 +212,33 @@ class XSSStored(Attack):
                 </table>'''.format(rows)
 
         return content
+
+
+    def run_secure(self, handler):
+        params = handler.params
+        connection = handler.server.connection
+        cursor = connection.cursor()
+
+        if 'comment' in params:
+            comment = params.get('comment', '')[0]
+            cursor.execute('INSERT INTO comments VALUES(NULL, ?, ?)', [comment, time.ctime()])
+            connection.commit()
+            return 'Thank you for leaving the comment. Please return to the guestbook to see all comments.'
+
+        cursor.execute("SELECT id, comment, time FROM comments")
+        rows = ""
+        for row in cursor.fetchall():
+            columns = "".join(
+                "<td>{}</td>".format(html.escape("-" if column is None else str(column)))
+                for column in row
+            )
+            rows += "<tr>{}</tr>".format(columns)
+        return """
+            <div><span>Comment(s):</span></div>
+            <table>
+                <thead><th>id</th><th>comment</th><th>time</th></thead>
+                {}
+            </table>""".format(rows)
 
 
 class UnvalidatedRedirect(Attack):
@@ -226,6 +303,29 @@ class CommandInjection(Attack):
         return content
 
 
+    def run_secure(self, handler):
+        params = handler.params
+        if 'domain' not in params:
+            return 'Enter a domain name to run the secure comparison.'
+
+        domain = params.get('domain', [''])[0]
+        if (not re.fullmatch(r'[A-Za-z0-9.-]{1,253}', domain)
+                or domain.startswith('-') or '..' in domain):
+            return '<div class="alert alert-warning">Invalid domain name.</div>'
+
+        command = 'host' if os.name != 'nt' else 'nslookup'
+        try:
+            output = subprocess.check_output(
+                [command, domain],
+                shell=False,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL
+            )
+        except subprocess.CalledProcessError as ex:
+            output = ex.output
+        return '<pre>{}</pre>'.format(html.escape(output.decode(errors='replace')))
+
+
 class UnsafeDeserialization(Attack):
 
     class RCE:
@@ -272,6 +372,20 @@ class PathTraversal(Attack):
         content = '<pre><code>{}</code></pre>'.format(file)
 
         return content
+
+
+    def run_secure(self, handler):
+        path = handler.params.get('path', ['docs/cursus.txt'])[0]
+        docs_root = os.path.abspath('docs')
+        requested = os.path.abspath(path)
+        try:
+            if os.path.commonpath([docs_root, requested]) != docs_root:
+                raise ValueError('requested path escaped the documents directory')
+            with open(requested, 'rb') as document:
+                value = document.read().decode()
+            return '<pre><code>{}</code></pre>'.format(html.escape(value))
+        except (OSError, ValueError, UnicodeDecodeError):
+            return '<div class="alert alert-warning">Document not available.</div>'
 
 
 class SessionFixation(Attack):
@@ -356,6 +470,40 @@ class AuthBypass(Attack):
         content = content.format(type=type, message=message)
 
         return content
+
+
+    def run_secure(self, handler):
+        params = handler.params
+        connection = handler.server.connection
+        cursor = connection.cursor()
+        session = handler.cookie['SESSIONID'].value
+        alert_type = 'empty'
+        message = ''
+        content = """
+            <div class="alert alert-{type}" role="alert">
+                <div class="message">{message}</div>
+            </div>
+        """
+
+        if params.keys() == {'username', 'password'}:
+            username = params.get('username')[0]
+            password = params.get('password')[0]
+            cursor.execute(
+                "SELECT * FROM users WHERE username = ? AND password = ?",
+                (username, password)
+            )
+            user = cursor.fetchone()
+            if user:
+                alert_type = 'success'
+                message = 'Welcome <strong>{} {}</strong>!'.format(
+                    html.escape(str(user[2])), html.escape(str(user[3])))
+                cursor.execute("UPDATE users SET session = ? WHERE id = ?", (session, user[0]))
+                connection.commit()
+            else:
+                alert_type = 'danger'
+                message = 'The username and/or password is incorrect!'
+
+        return content.format(type=alert_type, message=message)
 
 
 class XSRequestForgery(Attack):

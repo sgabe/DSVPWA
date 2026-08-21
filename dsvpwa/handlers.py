@@ -82,7 +82,7 @@ class TemplateHandler(VulnRequestHandler):
         for attack in self.attacks:
             if self.handler.path == attack.route:
                 title = attack.title
-                content = attack.lesson() + attack.run(self.handler)
+                content = attack.lesson(self.handler) + attack.execute(self.handler)
                 break
 
         return self.content.read().format(
