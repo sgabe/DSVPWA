@@ -17,13 +17,66 @@ class Attack():
         'vectors like this.'
     )
 
-    def __init__(self, title, description, route, good_path, evil_path, reference):
+    def __init__(self, title, description, route, good_path, evil_path, reference,
+                 owasp='', cwe='', objective='', source='', sink='', defense=''):
         self.title = title
         self.description = description
         self.route = route
         self.good_path = good_path
         self.evil_path = evil_path
         self.reference = reference
+        self.owasp = owasp
+        self.cwe = cwe
+        self.objective = objective
+        self.source = source
+        self.sink = sink
+        self.defense = defense
+
+    @staticmethod
+    def _example(label, value):
+        value = value or ''
+        escaped = html.escape(value, quote=True)
+        if value.startswith('/') or value.startswith('http://') or value.startswith('https://'):
+            return '<a href="{}">{}</a>'.format(escaped, label)
+        return '<code>{}</code>'.format(escaped)
+
+    def lesson(self):
+        """Render student-facing context without changing the vulnerable behavior."""
+        return '''
+        <aside class="card mb-4 lesson-card">
+            <div class="card-body">
+                <h2 class="h5">Learning objective</h2>
+                <p>{objective}</p>
+                <p class="mb-1"><strong>OWASP:</strong> {owasp}</p>
+                <p class="mb-1"><strong>CWE:</strong> {cwe}</p>
+                <p class="mb-1"><strong>Data flow:</strong> <code>{source}</code> &rarr; <code>{sink}</code></p>
+                <details class="mt-3">
+                    <summary>Why this is vulnerable</summary>
+                    <p class="mt-2">{description}</p>
+                </details>
+                <details class="mt-2">
+                    <summary>Guided examples</summary>
+                    <p class="mt-2">Benign: {good}<br>Adversarial: {evil}</p>
+                </details>
+                <details class="mt-2">
+                    <summary>What a defense should change</summary>
+                    <p class="mt-2">{defense}</p>
+                </details>
+                <p class="mt-3 mb-0"><a href="{reference}" target="_blank" rel="noopener">OWASP reference</a></p>
+            </div>
+        </aside>
+        '''.format(
+            objective=html.escape(self.objective),
+            owasp=html.escape(self.owasp),
+            cwe=html.escape(self.cwe),
+            source=html.escape(self.source),
+            sink=html.escape(self.sink),
+            description=html.escape(self.description),
+            defense=html.escape(self.defense),
+            good=self._example('open example', self.good_path),
+            evil=self._example('open example', self.evil_path),
+            reference=html.escape(self.reference, quote=True),
+        )
 
     def run(self):
         pass

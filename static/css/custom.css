@@ -96,3 +96,12 @@ footer .version:before {
   content: "Version ";
   font-size: 80%;
 }
+
+.lesson-card {
+  text-align: left;
+}
+
+.lesson-card details summary {
+  cursor: pointer;
+  font-weight: 600;
+}

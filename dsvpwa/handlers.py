@@ -42,7 +42,13 @@ class TemplateHandler(VulnRequestHandler):
             route = attack.findtext('route'),
             good_path = attack.findtext('good_path'),
             evil_path = attack.findtext('evil_path'),
-            reference = attack.findtext('reference')
+            reference = attack.findtext('reference'),
+            owasp = attack.findtext('owasp', ''),
+            cwe = attack.findtext('cwe', ''),
+            objective = attack.findtext('objective', ''),
+            source = attack.findtext('source', ''),
+            sink = attack.findtext('sink', ''),
+            defense = attack.findtext('defense', '')
         )
         attacks.append(instance)
 
@@ -76,7 +82,7 @@ class TemplateHandler(VulnRequestHandler):
         for attack in self.attacks:
             if self.handler.path == attack.route:
                 title = attack.title
-                content = attack.run(self.handler)
+                content = attack.lesson() + attack.run(self.handler)
                 break
 
         return self.content.read().format(

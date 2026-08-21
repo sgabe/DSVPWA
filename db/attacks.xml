@@ -5,9 +5,13 @@
         <title>Login</title>
         <route>/login</route>
         <template>login.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/login?username=guest&amp;password=guest</good_path>
+        <evil_path>/login?username=guest&amp;password=%27%20OR%20%271%27=%271%27--</evil_path>
+        <description>User-controlled credentials are concatenated into a SQL statement, so input can change the statement's meaning.</description>
+        <owasp>A05:2025 Injection / A07:2025 Authentication Failures</owasp><cwe>CWE-89</cwe>
+        <objective>Explain how an injection flaw in an authentication query can become an authentication bypass.</objective>
+        <source>username, password</source><sink>SQLite query string</sink>
+        <defense>Use parameterized SQL and treat authentication as a separate control from input validation.</defense>
         <reference>https://owasp.org/www-community/attacks/SQL_Injection</reference>
     </attack>
     <attack id="1">
@@ -15,9 +19,13 @@
         <title>Home</title>
         <route>/home</route>
         <template>main.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/home?path=/</good_path>
+        <evil_path>/home?session=student-fixed-session&amp;path=/login</evil_path>
+        <description>The application accepts a session identifier chosen by the requester instead of generating and rotating it at a trust-boundary change.</description>
+        <owasp>A07:2025 Authentication Failures</owasp><cwe>CWE-384</cwe>
+        <objective>Describe why accepting an attacker-chosen session identifier can let an attacker predict a victim's authenticated session.</objective>
+        <source>session query parameter</source><sink>SESSIONID cookie</sink>
+        <defense>Generate session identifiers server-side and rotate them after authentication or privilege changes.</defense>
         <reference>https://owasp.org/www-community/attacks/Session_fixation</reference>
     </attack>
     <attack id="2">
@@ -25,9 +33,15 @@
         <title>Profile</title>
         <route>/profile</route>
         <template>main.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/profile</good_path>
+        <evil_path>Replay another user's SESSIONID cookie</evil_path>
+        <description>Possession of the session identifier is sufficient to impersonate the user, and the application exposes weak session handling around that identifier.</description>
+        <owasp>A07:2025 Authentication Failures</owasp>
+        <cwe>CWE-613</cwe>
+        <objective>Relate browser cookies, server-side session state, and impersonation when a session token is stolen or replayed.</objective>
+        <source>SESSIONID cookie</source>
+        <sink>user lookup by session</sink>
+        <defense>Use high-entropy rotated tokens, appropriate cookie attributes, short lifetimes, and explicit logout/invalidation.</defense>
         <reference>https://owasp.org/www-community/attacks/Session_hijacking_attack</reference>
     </attack>
     <attack id="3">
@@ -35,9 +49,15 @@
         <title>Users</title>
         <route>/users</route>
         <template>users.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/users?id=1</good_path>
+        <evil_path>/users?id=1%20OR%201=1</evil_path>
+        <description>The id parameter is concatenated directly into SQL, allowing data to be interpreted as executable query syntax.</description>
+        <owasp>A05:2025 Injection</owasp>
+        <cwe>CWE-89</cwe>
+        <objective>Predict how changing an input value changes the SQL statement and the rows returned by the database.</objective>
+        <source>id query parameter</source>
+        <sink>SQLite query string</sink>
+        <defense>Use parameterized SQL and validate the expected data type before querying.</defense>
         <reference>https://owasp.org/www-community/attacks/SQL_Injection</reference>
     </attack>
     <attack id="4">
@@ -45,9 +65,15 @@
         <title>Message</title>
         <route>/post</route>
         <template>post.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/post?msg=Hello</good_path>
+        <evil_path>/post?msg=%3Cscript%3Ealert(document.domain)%3C/script%3E</evil_path>
+        <description>Untrusted input is inserted into an HTML response without context-appropriate output encoding.</description>
+        <owasp>A05:2025 Injection</owasp>
+        <cwe>CWE-79</cwe>
+        <objective>Distinguish data from executable browser content and explain why output context determines the required encoding.</objective>
+        <source>msg query parameter</source>
+        <sink>HTML response body</sink>
+        <defense>Apply context-appropriate output encoding and use a restrictive Content Security Policy as defense in depth.</defense>
         <reference>https://owasp.org/www-community/attacks/xss</reference>
     </attack>
     <attack id="5">
@@ -55,9 +81,15 @@
         <title>Guestbook</title>
         <route>/guestbook</route>
         <template>guestbook.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/guestbook?comment=Hello</good_path>
+        <evil_path>/guestbook?comment=%3Cimg%20src=x%20onerror=alert(document.domain)%3E</evil_path>
+        <description>Comments are stored safely as database values but later emitted into HTML without output encoding.</description>
+        <owasp>A05:2025 Injection</owasp>
+        <cwe>CWE-79</cwe>
+        <objective>Explain why safe database insertion does not prevent stored XSS when output is later rendered unsafely.</objective>
+        <source>comment query parameter</source>
+        <sink>guestbook HTML table</sink>
+        <defense>Encode untrusted values when they are rendered into HTML; input validation alone is not an XSS defense.</defense>
         <reference>https://owasp.org/www-community/attacks/xss</reference>
     </attack>
     <attack id="6">
@@ -65,9 +97,15 @@
         <title>Jump</title>
         <route>/jump</route>
         <template>main.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/jump?path=/</good_path>
+        <evil_path>/jump?path=https://example.com/</evil_path>
+        <description>The redirect target is taken directly from user input, so a trusted application URL can send a user to an attacker-chosen destination.</description>
+        <owasp>Related to A01:2025 Broken Access Control</owasp>
+        <cwe>CWE-601</cwe>
+        <objective>Explain how unvalidated redirects can support phishing and trust-boundary confusion even without code execution.</objective>
+        <source>path query parameter</source>
+        <sink>browser location</sink>
+        <defense>Prefer server-side identifiers for destinations or allow only validated local paths.</defense>
         <reference>https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html</reference>
     </attack>
     <attack id="7">
@@ -75,19 +113,30 @@
         <title>Extract</title>
         <route>/extract</route>
         <template>main.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>Generated by the application</good_path>
+        <evil_path>Generated by the application at risk level 3</evil_path>
+        <description>Python pickle can invoke callable behavior while reconstructing objects, so deserializing attacker-controlled pickle data can execute code.</description>
+        <owasp>A08:2025 Software or Data Integrity Failures</owasp>
+        <cwe>CWE-502</cwe>
+        <objective>Explain why serialization formats that can encode executable behavior must not be accepted across an untrusted boundary.</objective>
+        <source>base64 object query parameter</source>
+        <sink>pickle.loads</sink>
+        <defense>Use a non-executable data format with explicit schema validation, such as JSON for simple data structures.</defense>
         <reference>https://owasp.org/www-community/vulnerabilities/Deserialization_of_untrusted_data</reference>
     </attack>
     <attack id="8">
         <class>CommandInjection</class>
         <title>Diagnostics</title>
-        <route>/diag</route>
-        <template>diagnostics.html</template>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <route>/diag</route><template>diagnostics.html</template>
+        <good_path>/diag?domain=www.google.com</good_path>
+        <evil_path>Generated for the host operating system at risk level 3</evil_path>
+        <description>The domain value is concatenated into a shell command and executed with shell=True, allowing shell metacharacters to introduce additional commands.</description>
+        <owasp>A05:2025 Injection</owasp>
+        <cwe>CWE-78</cwe>
+        <objective>Identify the boundary between command arguments and shell syntax, and explain how shell=True changes that boundary.</objective>
+        <source>domain query parameter</source>
+        <sink>subprocess with shell=True</sink>
+        <defense>Avoid the shell, pass arguments as a list, and validate values against the expected domain-name grammar.</defense>
         <reference>https://owasp.org/www-community/attacks/Command_Injection</reference>
     </attack>
     <attack id="9">
@@ -95,9 +144,15 @@
         <template>documents.html</template>
         <title>Documents</title>
         <route>/docs</route>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/docs?path=docs/cursus.txt</good_path>
+        <evil_path>/docs?path=docs/../db/users.xml</evil_path>
+        <description>The application resolves a requester-controlled path without constraining the resulting file to an intended document directory.</description>
+        <owasp>A01:2025 Broken Access Control</owasp>
+        <cwe>CWE-22</cwe>
+        <objective>Use canonical paths to explain why checking a string before path resolution is weaker than checking the resolved location.</objective>
+        <source>path query parameter</source>
+        <sink>open / urlopen</sink>
+        <defense>Resolve paths under a fixed base directory, reject paths that escape it, and keep URL fetching separate from file access.</defense>
         <reference>https://owasp.org/www-community/attacks/Path_Traversal</reference>
     </attack>
     <attack id="10">
@@ -105,9 +160,15 @@
         <template>main.html</template>
         <title>Admin</title>
         <route>/admin</route>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/admin</good_path>
+        <evil_path>Open /admin without an authenticated session</evil_path>
+        <description>The application sends client-side navigation instructions but continues to include protected content in the same response.</description>
+        <owasp>A01:2025 Broken Access Control</owasp>
+        <cwe>CWE-698</cwe>
+        <objective>Explain why authorization must decide whether protected data is generated, not merely where the browser navigates afterward.</objective>
+        <source>SESSIONID cookie presence</source>
+        <sink>protected response content</sink>
+        <defense>Perform server-side authorization before generating protected content and return immediately on denial.</defense>
         <reference>https://owasp.org/www-community/attacks/Execution_After_Redirect_(EAR)</reference>
     </attack>
     <attack id="11">
@@ -115,9 +176,15 @@
         <template>main.html</template>
         <title>Settings</title>
         <route>/settings</route>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/settings</good_path>
+        <evil_path>Submit a cross-origin request that changes the email field</evil_path>
+        <description>A state-changing operation trusts ambient session cookies and has no anti-CSRF token or origin validation.</description>
+        <owasp>A01:2025 Broken Access Control</owasp>
+        <cwe>CWE-352</cwe>
+        <objective>Explain why authentication cookies identify the browser session but do not prove that the user intended a particular state-changing request.</objective>
+        <source>cross-origin request plus SESSIONID</source>
+        <sink>profile update</sink>
+        <defense>Use non-GET state changes, anti-CSRF tokens, SameSite cookies, and origin checks as appropriate.</defense>
         <reference>https://owasp.org/www-community/attacks/csrf</reference>
     </attack>
     <attack id="12">
@@ -125,9 +192,15 @@
         <template>main.html</template>
         <title>Danger</title>
         <route>/danger</route>
-        <good_path>...</good_path>
-        <evil_path>...</evil_path>
-        <description>...</description>
+        <good_path>/danger</good_path>
+        <evil_path>Frame /danger in an attacker-controlled page and visually disguise the delete button</evil_path>
+        <description>The application permits framing and places a destructive action where a user can be tricked into clicking through an overlay.</description>
+        <owasp>Related to A01:2025 Broken Access Control</owasp>
+        <cwe>CWE-1021</cwe>
+        <objective>Explain how UI redressing can cause an authenticated user to invoke an action they did not intend.</objective>
+        <source>framed user click</source>
+        <sink>account deletion</sink>
+        <defense>Use CSP frame-ancestors or X-Frame-Options and require deliberate confirmation for destructive actions.</defense>
         <reference>https://owasp.org/www-community/attacks/Clickjacking</reference>
     </attack>
 </attacks>
