@@ -37,6 +37,8 @@ body.login {
 a.navbar-brand i.fas {
   color: red;
   margin-right: 0.25em;
+  width: 20px;
+  height: 20px;
 }
 
 .form-signin {
