@@ -43,7 +43,7 @@ class Attack():
     def lesson(self):
         """Render student-facing context without changing the vulnerable behavior."""
         return '''
-        <aside class="card mb-4 lesson-card">
+        <aside class="card mb-4 lesson-card d-none" aria-hidden="true">
             <div class="card-body">
                 <h2 class="h5">Learning objective</h2>
                 <p>{objective}</p>

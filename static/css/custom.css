@@ -105,3 +105,14 @@ footer .version:before {
   cursor: pointer;
   font-weight: 600;
 }
+
+.lesson-card-footer-toggle {
+  top: 1em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.footer .container {
+  position: relative;
+}
