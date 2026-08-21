@@ -22,8 +22,6 @@ class VulnRequestHandler():
         self.status_code = HTTPStatus.BAD_REQUEST
 
     def get_content(self):
-        if self.status_code == HTTPStatus.OK:
-            return self.content.read()
         return self.content
 
     def get_status_code(self):
@@ -85,7 +83,7 @@ class TemplateHandler(VulnRequestHandler):
                 content = attack.lesson(self.handler) + attack.execute(self.handler)
                 break
 
-        return self.content.read().format(
+        return self.content.format(
             project = dsvpwa.__project__,
             url = dsvpwa.__url__,
             author = dsvpwa.__author__,
@@ -97,10 +95,11 @@ class TemplateHandler(VulnRequestHandler):
 
     def find(self, route):
         try:
-            self.content = open('templates/{}'.format(route['template']))
+            with open('templates/{}'.format(route['template'])) as template:
+                self.content = template.read()
             self.status_code = HTTPStatus.OK
             return True
-        except:
+        except OSError:
             self.content = 'File not found'
             self.status_code = HTTPStatus.NOT_FOUND
             return False
@@ -132,9 +131,11 @@ class StaticHandler(VulnRequestHandler):
 
             ext = os.path.splitext(requested)[1]
             if ext in ('.jpg', '.jpeg', '.png', '.woff', '.woff2', '.ttf', '.ico'):
-                self.content = open(requested, 'rb')
+                with open(requested, 'rb') as static_file:
+                    self.content = static_file.read()
             else:
-                self.content = open(requested, 'r')
+                with open(requested, 'r') as static_file:
+                    self.content = static_file.read()
             self.content_type = self.guess_type(requested)
             self.status_code = HTTPStatus.OK
             return True

@@ -362,11 +362,13 @@ class PathTraversal(Attack):
         try:
             path = params.get('path', ['docs/cursus.txt'])[0]
             if '://' not in path:
-                file = open(os.path.abspath(path), 'rb')
+                with open(os.path.abspath(path), 'rb') as source:
+                    value = source.read()
             else:
-                file = urllib.request.urlopen(path)
+                with urllib.request.urlopen(path) as source:
+                    value = source.read()
 
-            file = html.escape(file.read().decode())
+            file = html.escape(value.decode())
         except:
             file = 'File not found...'
 
