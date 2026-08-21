@@ -215,8 +215,18 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
         self.wfile.flush()
 
     def do_GET(self):
-        self.params = urlparse.parse_qs(urlparse.urlparse(self.path).query)
-        self.path = self.path.split('?', 1)[0]
+        parsed = urlparse.urlparse(self.path)
+        self.params = urlparse.parse_qs(parsed.query)
+        self.path = parsed.path
+
+        if self.path == '/__lab/reset':
+            self.server.reset_database()
+            self.send_response(HTTPStatus.SEE_OTHER)
+            self.send_header('Location', '/')
+            self.send_header('Connection', 'close')
+            self.end_headers()
+            return
+
         self.cookie.load(self.headers.get('Cookie', ''))
 
         if not self.cookie and '/login' == self.path:

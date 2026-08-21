@@ -23,6 +23,10 @@
     </nav>
     <main role="main" class="container">
         <h1>Welcome!</h1>
+        <p>Each lesson is intentionally vulnerable. Reset the in-memory data before a new exercise or demonstration.</p>
+        <form method="GET" action="/__lab/reset" class="mb-4">
+            <button class="btn btn-outline-secondary" type="submit">Reset lab state</button>
+        </form>
         {content}
     </main>
     <footer class="footer">
