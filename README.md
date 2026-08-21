@@ -39,6 +39,10 @@ You can build and run the application with an interactive shell (`-it`) in a con
 
 Note that ports which are not bound to the host (i.e., `-p 65413:65413` instead of `-p 127.0.0.1:65413:65413`) will be accessible from the outside.
 
+## Learning
+
+See [`LEARNING.md`](LEARNING.md) for a suggested learning sequence and a self-guided approach to comparing vulnerable and secure behavior.
+
 ## Similar projects
 
 + [Damn Small Vulnerable Web (DSVW)](https://github.com/stamparm/DSVW)
