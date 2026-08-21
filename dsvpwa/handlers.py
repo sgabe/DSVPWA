@@ -115,17 +115,30 @@ class StaticHandler(VulnRequestHandler):
     }
 
     def find(self, path):
-        path = 'static/svg/bug-fill.svg' if path == '/favicon.ico' else path
-        ext = os.path.splitext(path)[1]
+        path = '/static/svg/bug-fill.svg' if path == '/favicon.ico' else path
+
+        # Keep arbitrary-file access inside the explicit PathTraversal lesson.
+        # The generic asset handler should never become a second traversal lab.
+        if not path.startswith('/static/'):
+            self.content = 'File not found'
+            self.status_code = HTTPStatus.NOT_FOUND
+            return False
+
+        static_root = os.path.abspath('./static')
+        requested = os.path.abspath('.' + posixpath.normpath(path))
         try:
+            if os.path.commonpath([static_root, requested]) != static_root:
+                raise ValueError('static path escaped the static directory')
+
+            ext = os.path.splitext(requested)[1]
             if ext in ('.jpg', '.jpeg', '.png', '.woff', '.woff2', '.ttf', '.ico'):
-                self.content = open('./{}'.format(path), 'rb')
+                self.content = open(requested, 'rb')
             else:
-                self.content = open('./{}'.format(path), 'r')
-            self.content_type = self.guess_type(path)
+                self.content = open(requested, 'r')
+            self.content_type = self.guess_type(requested)
             self.status_code = HTTPStatus.OK
             return True
-        except:
+        except (OSError, ValueError):
             self.content = 'File not found'
             self.status_code = HTTPStatus.NOT_FOUND
             return False
@@ -144,7 +157,6 @@ class StaticHandler(VulnRequestHandler):
 
 
 class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
-    cookie = http.cookies.SimpleCookie()
 
     routes = {'/' : {'template' : 'index.html'}}
     for attack in ET.parse('./db/attacks.xml').findall('attack'):
@@ -154,6 +166,9 @@ class VulnHTTPRequestHandler(BaseHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs):
         self.directory = os.fspath(os.getcwd())
+        # A cookie jar belongs to one HTTP request. Keeping it on the class can
+        # leak state between clients and obscure the intended session lessons.
+        self.cookie = http.cookies.SimpleCookie()
         super().__init__(*args, **kwargs)
 
     def log_request(self, code='-', size='-'):
