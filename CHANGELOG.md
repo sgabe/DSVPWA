@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [0.1.0] - 2021-11-10
 ### Added
 - Attack vector for clickjacking.
 - Attack vector for CSRF.
@@ -28,4 +30,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Version reporting.
 - Docker base image.
 
-[Unreleased]: https://github.com/sgabe/DSVPWA/tree/main
+[Unreleased]: https://github.com/sgabe/DSVPWA/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sgabe/DSVPWA/releases/tag/v0.1.0
