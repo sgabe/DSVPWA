@@ -7,7 +7,7 @@ import argparse
 from dsvpwa.server import VulnHTTPServer
 from dsvpwa.handlers import VulnHTTPRequestHandler
 
-BUILD_VER = os.getenv('BUILD_VER') or '0.0.1'
+BUILD_VER = os.getenv('BUILD_VER') or '0.2.0'
 BUILD_REV = os.getenv('BUILD_REV') or 'dev'
 
 def main():
