@@ -242,6 +242,29 @@ class XSSStored(Attack):
             </table>""".format(rows)
 
 
+class XSSDOM(Attack):
+    def _panel(self, mode):
+        return '''
+            <section aria-label="Language selection">
+                <p>Choose a language: <a href="/language#lang=en">English</a> |
+                    <a href="/language#lang=de">Deutsch</a></p>
+                <p>Edit <code>#lang=</code> in the address bar to change the indicator.
+                    The URL fragment stays in the browser and is not sent to the server.</p>
+                <div class="alert alert-info">
+                    Chosen language: <span id="dom-xss-output" class="font-weight-bold"
+                        data-security-mode="{mode}"><script src="/static/js/dom-xss.js"></script></span>
+                </div>
+                <noscript>Enable JavaScript to use the language indicator.</noscript>
+            </section>
+        '''.format(mode=mode)
+
+    def run(self, handler):
+        return self._panel('vulnerable')
+
+    def run_secure(self, handler):
+        return self._panel('secure')
+
+
 class UnvalidatedRedirect(Attack):
     def run(self, handler):
         params = handler.params

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- Reachable DOM-based XSS language lesson.
+
 ## [0.2.1] - 2026-09-12
 ### Changed
 - Docker base image.

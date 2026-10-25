@@ -203,4 +203,20 @@
         <defense>Use CSP frame-ancestors or X-Frame-Options and require deliberate confirmation for destructive actions.</defense>
         <reference>https://owasp.org/www-community/attacks/Clickjacking</reference>
     </attack>
+    <attack id="13">
+        <class>XSSDOM</class>
+        <title>Language</title>
+        <route>/language</route>
+        <template>main.html</template>
+        <good_path>/language#lang=en</good_path>
+        <evil_path>/language#lang=%3Cscript%3Ealert(document.domain)%3C%2Fscript%3E</evil_path>
+        <description>Client-side JavaScript reads the lang value from the URL fragment and passes it to document.write, allowing browser-controlled data to be interpreted as HTML and JavaScript without appearing in the HTTP request.</description>
+        <owasp>A05:2025 Injection</owasp>
+        <cwe>CWE-79</cwe>
+        <objective>Trace URL-fragment data into browser HTML parsing and distinguish DOM-based XSS from server-side reflected and stored examples.</objective>
+        <source>location.hash (#lang=...)</source>
+        <sink>document.write</sink>
+        <defense>Render the language as text with textContent instead of document.write. Use Content Security Policy as defense in depth, not as a replacement for a safe DOM sink.</defense>
+        <reference>https://owasp.org/www-community/attacks/DOM_Based_XSS</reference>
+    </attack>
 </attacks>

@@ -87,7 +87,7 @@ The goal is to understand both the normal HTTP/session mechanism and the securit
 
 ### 3. Cross-site scripting (XSS)
 
-Use **Message / reflected XSS** first, then **Guestbook / stored XSS**.
+Use **Message / reflected XSS** first, then **Guestbook / stored XSS**, followed by **Language / DOM-based XSS**.
 
 For reflected XSS, trace:
 
@@ -103,6 +103,18 @@ For stored XSS, separate two events:
 2. a later response renders that value into HTML.
 
 The database can use a parameterized query correctly while the later HTML output is still unsafe. This is why SQL injection defenses do not automatically prevent XSS.
+
+For DOM-based XSS, open `/language` and trace:
+
+```text
+URL fragment (#lang=...) -> client-side JavaScript -> document.write -> HTML parsing
+```
+
+The language indicator defaults to `en`. Try the language links, then use **Show lesson** to open the benign and adversarial guided examples. Changing the fragment reloads this lesson so that `document.write` runs while the page is being parsed.
+
+Inspect the browser's Network panel: the fragment after `#` is not sent in the HTTP request. The server returns the same page; the browser reads the fragment and inserts its value. Compare the original response with the resulting DOM to locate where interpretation happens.
+
+Repeat the adversarial example in secure mode. Its indicator uses `textContent`, so the payload appears as literal text. Inspect `static/js/dom-xss.js` to distinguish this safe sink from CSP blocking script execution; CSP alone does not remove an unsafe HTML sink.
 
 ### 4. Cross-site request forgery (CSRF)
 

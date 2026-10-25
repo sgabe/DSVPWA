@@ -125,6 +125,38 @@ class LessonContractTests(unittest.TestCase):
         _, _, guestbook = self.vulnerable.request('GET', '/guestbook')
         self.assertNotIn('<b>stored</b>', guestbook)
 
+    def test_dom_xss_lesson_is_reachable_with_guided_examples(self):
+        status, _, home = self.vulnerable.request('GET', '/')
+        self.assertEqual(status, 200)
+        self.assertIn('<a class="nav-link" href="/language">Language</a>', home)
+
+        status, _, body = self.vulnerable.request('GET', '/language')
+        self.assertEqual(status, 200)
+        self.assertIn('lesson-card d-none', body)
+        self.assertIn('CWE-79', body)
+        self.assertIn('location.hash (#lang=...)', body)
+        self.assertIn('href="/language#lang=en"', body)
+        self.assertIn(
+            'href="/language#lang=%3Cscript%3Ealert(document.domain)%3C%2Fscript%3E"',
+            body,
+        )
+        self.assertIn('data-security-mode="vulnerable"', body)
+        self.assertIn('id="lesson-card-toggle"', body)
+        script = '<script src="/static/js/dom-xss.js"></script>'
+        self.assertIn(script, body)
+        self.assertLess(body.index('<main'), body.index(script))
+        self.assertLess(body.index(script), body.index('</main>'))
+
+        status, _, _ = self.vulnerable.request('GET', '/static/js/dom-xss.js')
+        self.assertEqual(status, 200)
+
+    def test_dom_xss_secure_comparison_selects_the_safe_renderer(self):
+        status, _, body = self.secure.request('GET', '/language')
+        self.assertEqual(status, 200)
+        self.assertIn('data-security-mode="secure"', body)
+        self.assertIn('id="dom-xss-output"', body)
+        self.assertIn('<script src="/static/js/dom-xss.js"></script>', body)
+
     def test_authentication_injection_has_a_secure_counterexample(self):
         attack = urllib.parse.urlencode({
             'username': 'guest',
