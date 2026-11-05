@@ -104,7 +104,7 @@ class SQLinjection(Attack):
         try:
             cursor.execute("SELECT id, username, firstname, lastname, email, session FROM users WHERE id=" + id)
         except sqlite3.OperationalError as e:
-            return e
+            return str(e)
 
         rows = ""
         for row in cursor.fetchall():
