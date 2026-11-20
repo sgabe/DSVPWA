@@ -17,13 +17,21 @@ class VulnHTTPServer(ThreadingHTTPServer):
         ))
 
     def __init__(self, *args, **kwargs):
+        self.connection = None
         super().__init__(*args, **kwargs)
-        self.connection = sqlite3.connect(
-            ':memory:',
-            isolation_level=None,
-            check_same_thread=False
-        )
-        self.reset_database()
+        try:
+            self.connection = sqlite3.connect(
+                ':memory:',
+                isolation_level=None,
+                check_same_thread=False
+            )
+            self.reset_database()
+        except BaseException:
+            try:
+                self.server_close()
+            except Exception:
+                pass
+            raise
 
     def reset_database(self):
         """Restore the deterministic state expected at the start of a lab."""
@@ -54,7 +62,10 @@ class VulnHTTPServer(ThreadingHTTPServer):
         )
 
     def server_close(self):
+        connection = getattr(self, 'connection', None)
+        self.connection = None
         try:
-            self.connection.close()
+            if connection is not None:
+                connection.close()
         finally:
             super().server_close()

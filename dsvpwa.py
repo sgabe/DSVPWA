@@ -7,7 +7,7 @@ import argparse
 from dsvpwa.server import VulnHTTPServer
 from dsvpwa.handlers import VulnHTTPRequestHandler
 
-BUILD_VER = os.getenv('BUILD_VER') or '0.2.1'
+BUILD_VER = os.getenv('BUILD_VER') or '0.2.2'
 BUILD_REV = os.getenv('BUILD_REV') or 'dev'
 
 def main():
@@ -32,6 +32,7 @@ def main():
     proto = 'http' if not args.ssl else 'https'
     security_mode = 'secure' if args.secure else 'vulnerable'
 
+    httpd = None
     try:
         httpd = VulnHTTPServer((args.host, args.port), VulnHTTPRequestHandler)
         httpd.RequestHandlerClass.risk = args.risk
@@ -55,8 +56,11 @@ def main():
     except Exception as ex:
         print("[!] Exception occurred ('%s')" % ex)
     finally:
-        httpd.server_close()
-        os._exit(0)
+        try:
+            if httpd is not None:
+                httpd.server_close()
+        finally:
+            os._exit(0)
 
 
 if __name__ == "__main__":

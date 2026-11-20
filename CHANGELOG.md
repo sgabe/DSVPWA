@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - SQLi error handling by returning exception as string.
+- Startup errors being masked by cleanup of an uninitialized connection.
 
 ## [0.2.1] - 2026-09-12
 ### Changed
